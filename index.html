@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Derniers résultats NFL</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --card: #151a24;
+      --line: #232a38;
+      --text: #f0f2f5;
+      --muted: #8b93a3;
+      --accent: #d0103a;
+      --live: #2ecc71;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 16px 60px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+
+    .sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    #games {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .game {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 18px;
+    }
+
+    .status {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status.live {
+      color: var(--live);
+      font-weight: 700;
+    }
+
+    .team-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .team-name {
+      font-weight: 500;
+    }
+
+    .team-name.winner {
+      font-weight: 700;
+    }
+
+    .team-score {
+      font-variant-numeric: tabular-nums;
+      font-size: 1.1rem;
+    }
+
+    .msg {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🏈 Derniers résultats NFL</h1>
+  <div class="sub" id="lastUpdate">Chargement…</div>
+
+  <div class="controls">
+    <button onclick="loadScores()">Actualiser</button>
+  </div>
+
+  <div id="games"></div>
+
+  <script>
+    async function loadScores() {
+      const container = document.getElementById('games');
+      const updateLabel = document.getElementById('lastUpdate');
+      container.innerHTML = '<div class="msg">Chargement des scores…</div>';
+
+      try {
+        const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+        if (!res.ok) throw new Error('Réponse réseau invalide');
+        const data = await res.json();
+
+        const events = data.events || [];
+        if (events.length === 0) {
+          container.innerHTML = '<div class="msg">Aucun match trouvé pour le moment.</div>';
+          updateLabel.textContent = 'Mis à jour : ' + new Date().toLocaleString('fr-FR');
+          return;
+        }
+
+        container.innerHTML = '';
+        events.forEach(ev => {
+          const comp = ev.competitions[0];
+          const teams = comp.competitors;
+          const home = teams.find(t => t.homeAway === 'home');
+          const away = teams.find(t => t.homeAway === 'away');
+          const statusType = comp.status.type;
+          const isLive = statusType.state === 'in';
+          const statusText = statusType.shortDetail || statusType.description || '';
+
+          const homeWon = statusType.completed && parseInt(home.score) > parseInt(away.score);
+          const awayWon = statusType.completed && parseInt(away.score) > parseInt(home.score);
+
+          const div = document.createElement('div');
+          div.className = 'game';
+          div.innerHTML = `
+        <div class="status ${isLive ? 'live' : ''}">${statusText}</div>
+        <div class="team-row">
+          <span class="team-name ${awayWon ? 'winner' : ''}">${away.team.displayName}</span>
+          <span class="team-score">${away.score ?? '-'}</span>
+        </div>
+        <div class="team-row">
+          <span class="team-name ${homeWon ? 'winner' : ''}">${home.team.displayName}</span>
+          <span class="team-score">${home.score ?? '-'}</span>
+        </div>
+      `;
+          container.appendChild(div);
+        });
+
+        updateLabel.textContent = 'Mis à jour : ' + new Date().toLocaleString('fr-FR');
+      } catch (err) {
+        container.innerHTML = '<div class="msg">Impossible de récupérer les résultats (' + err.message + ').</div>';
+        updateLabel.textContent = 'Échec de la mise à jour';
+      }
+    }
+
+    loadScores();
+  </script>
+
+</body>
+
+</html>
