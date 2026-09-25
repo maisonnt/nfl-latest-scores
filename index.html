@@ -7,7 +7,7 @@
   <title>Derniers résultats NFL</title>
   <style>
     :root {
-      --bg: #0b0e14;
+      --bg: transparent;
       --card: #151a24;
       --line: #232a38;
       --text: #f0f2f5;
@@ -38,14 +38,14 @@
       text-align: center;
       color: var(--muted);
       font-size: 0.85rem;
-      margin-bottom: 20px;
     }
 
     .controls {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
       gap: 10px;
-      margin-bottom: 24px;
+      margin: 0px 46px 24px 46px;
     }
 
     button {
@@ -61,6 +61,31 @@
 
     button:hover {
       opacity: 0.9;
+    }
+
+    .refresh-button {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .refresh-icon {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .refresh-button.loading .refresh-icon {
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     #games {
@@ -98,8 +123,25 @@
       padding: 4px 0;
     }
 
+    .team-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .team-logo {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      flex: 0 0 28px;
+    }
+
     .team-name {
       font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .team-name.winner {
@@ -121,11 +163,15 @@
 
 <body>
 
-  <h1>🏈 Derniers résultats NFL</h1>
-  <div class="sub" id="lastUpdate">Chargement…</div>
-
+  
   <div class="controls">
-    <button onclick="loadScores()">Actualiser</button>
+    <button class="refresh-button" id="refreshButton" onclick="loadScores()" aria-label="Actualiser" title="Actualiser">
+      <svg class="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <title>refresh</title>
+        <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+      </svg>
+    </button>
+    <div class="sub" id="lastUpdate">Chargement…</div>
   </div>
 
   <div id="games"></div>
@@ -134,6 +180,9 @@
     async function loadScores() {
       const container = document.getElementById('games');
       const updateLabel = document.getElementById('lastUpdate');
+      const refreshButton = document.getElementById('refreshButton');
+      refreshButton.classList.add('loading');
+      refreshButton.disabled = true;
       container.innerHTML = '<div class="msg">Chargement des scores…</div>';
 
       try {
@@ -154,6 +203,8 @@
           const teams = comp.competitors;
           const home = teams.find(t => t.homeAway === 'home');
           const away = teams.find(t => t.homeAway === 'away');
+          const homeLogo = home.team.logo || home.team.logos?.[0]?.href || '';
+          const awayLogo = away.team.logo || away.team.logos?.[0]?.href || '';
           const statusType = comp.status.type;
           const isLive = statusType.state === 'in';
           const statusText = statusType.shortDetail || statusType.description || '';
@@ -166,11 +217,17 @@
           div.innerHTML = `
         <div class="status ${isLive ? 'live' : ''}">${statusText}</div>
         <div class="team-row">
-          <span class="team-name ${awayWon ? 'winner' : ''}">${away.team.displayName}</span>
+          <div class="team-info">
+            ${awayLogo ? `<img class="team-logo" src="${awayLogo}" alt="" aria-hidden="true">` : ''}
+            <span class="team-name ${awayWon ? 'winner' : ''}">${away.team.displayName}</span>
+          </div>
           <span class="team-score">${away.score ?? '-'}</span>
         </div>
         <div class="team-row">
-          <span class="team-name ${homeWon ? 'winner' : ''}">${home.team.displayName}</span>
+          <div class="team-info">
+            ${homeLogo ? `<img class="team-logo" src="${homeLogo}" alt="" aria-hidden="true">` : ''}
+            <span class="team-name ${homeWon ? 'winner' : ''}">${home.team.displayName}</span>
+          </div>
           <span class="team-score">${home.score ?? '-'}</span>
         </div>
       `;
@@ -181,6 +238,9 @@
       } catch (err) {
         container.innerHTML = '<div class="msg">Impossible de récupérer les résultats (' + err.message + ').</div>';
         updateLabel.textContent = 'Échec de la mise à jour';
+      } finally {
+        refreshButton.classList.remove('loading');
+        refreshButton.disabled = false;
       }
     }
 
