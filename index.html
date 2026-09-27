@@ -2,250 +2,264 @@
 <html lang="fr">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Derniers résultats NFL</title>
-  <style>
-    :root {
-      --bg: transparent;
-      --card: #151a24;
-      --line: #232a38;
-      --text: #f0f2f5;
-      --muted: #8b93a3;
-      --accent: #d0103a;
-      --live: #2ecc71;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Derniers résultats NFL</title>
+    <style>
+        :root {
+            --bg: transparent;
+            --card: #151a24;
+            --line: #232a38;
+            --text: #f0f2f5;
+            --muted: #8b93a3;
+            --accent: #d0103a;
+            --live: #2ecc71;
+        }
 
-    * {
-      box-sizing: border-box;
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 24px 16px 60px;
-    }
+        body {
+            margin: 0;
+            font-family: "Plus Jakarta Sans", "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 0px 16px 12px;
+        }
 
-    h1 {
-      text-align: center;
-      font-size: 1.5rem;
-      margin-bottom: 4px;
-    }
+        h1 {
+            font-size: 1.5rem;
+        }
 
-    .sub {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
+        .header {
+            max-width: 640px;
+            margin: 12px auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
 
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin: 0px 46px 24px 46px;
-    }
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            flex: 1;
+        }
 
-    button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
 
-    button:hover {
-      opacity: 0.9;
-    }
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
 
-    .refresh-button {
-      width: 38px;
-      height: 38px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      line-height: 1;
-    }
+        button:hover {
+            opacity: 0.9;
+        }
 
-    .refresh-icon {
-      width: 22px;
-      height: 22px;
-      fill: currentColor;
-    }
+        .refresh-button {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
 
-    .refresh-button.loading .refresh-icon {
-      animation: spin 0.8s linear infinite;
-    }
+        .refresh-icon {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+        .refresh-button.loading .refresh-icon {
+            animation: spin 0.8s linear infinite;
+        }
 
-    #games {
-      max-width: 640px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    .game {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 14px 18px;
-    }
+        #games {
+            max-width: 640px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-    .status {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
+        .game {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
 
-    .status.live {
-      color: var(--live);
-      font-weight: 700;
-    }
+        .status {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
 
-    .team-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 0;
-    }
+        .status.live {
+            color: var(--live);
+            font-weight: 700;
+        }
 
-    .team-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
+        .team-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
 
-    .team-logo {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-      flex: 0 0 28px;
-    }
+        .team-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
 
-    .team-name {
-      font-weight: 500;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex: 0 0 28px;
+        }
 
-    .team-name.winner {
-      font-weight: 700;
-    }
+        .team-name {
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-    .team-score {
-      font-variant-numeric: tabular-nums;
-      font-size: 1.1rem;
-    }
+        .team-name.winner {
+            font-weight: 700;
+        }
 
-    .msg {
-      text-align: center;
-      color: var(--muted);
-      margin-top: 40px;
-    }
-  </style>
+        .team-score {
+            font-variant-numeric: tabular-nums;
+            font-size: 1.1rem;
+        }
+
+        .msg {
+            text-align: center;
+            color: var(--muted);
+            margin-top: 40px;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="header">
+        <h1 id="weekTitle">NFL | Semaine 00</h1>
+        <div class="controls">
+            <button class="refresh-button" id="refreshButton" onclick="loadScores()" aria-label="Actualiser"
+                title="Actualiser">
+                <svg class="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"
+                    focusable="false">
+                    <title>refresh</title>
+                    <path
+                        d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+                </svg>
+            </button>
+        </div>
+    </div>
 
-  
-  <div class="controls">
-    <button class="refresh-button" id="refreshButton" onclick="loadScores()" aria-label="Actualiser" title="Actualiser">
-      <svg class="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <title>refresh</title>
-        <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
-      </svg>
-    </button>
-    <div class="sub" id="lastUpdate">Chargement…</div>
-  </div>
+    <div id="games"></div>
 
-  <div id="games"></div>
+    <script>
+        async function loadScores() {
+            const container = document.getElementById('games');
+            const refreshButton = document.getElementById('refreshButton');
+            const weekTitle = document.getElementById('weekTitle');
+            refreshButton.classList.add('loading');
+            refreshButton.disabled = true;
+            container.innerHTML = '';
 
-  <script>
-    async function loadScores() {
-      const container = document.getElementById('games');
-      const updateLabel = document.getElementById('lastUpdate');
-      const refreshButton = document.getElementById('refreshButton');
-      refreshButton.classList.add('loading');
-      refreshButton.disabled = true;
-      container.innerHTML = '<div class="msg">Chargement des scores…</div>';
+            try {
+                const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+                if (!res.ok) throw new Error('Réponse réseau invalide');
+                const data = await res.json();
 
-      try {
-        const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
-        if (!res.ok) throw new Error('Réponse réseau invalide');
-        const data = await res.json();
+                const weekNumber = Number(data?.week?.number ?? data?.events?.[0]?.week?.number ?? 0);
+                const formattedWeek = String(weekNumber || 0).padStart(2, '0');
+                weekTitle.textContent = `NFL | Semaine ${formattedWeek}`;
 
-        const events = data.events || [];
-        if (events.length === 0) {
-          container.innerHTML = '<div class="msg">Aucun match trouvé pour le moment.</div>';
-          updateLabel.textContent = 'Mis à jour : ' + new Date().toLocaleString('fr-FR');
-          return;
+                const events = data.events || [];
+                if (events.length === 0) {
+                    container.innerHTML = '<div class="msg">Aucun match trouvé pour le moment.</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                events.forEach(ev => {
+                    const comp = ev.competitions[0];
+                    const teams = comp.competitors;
+                    const home = teams.find(t => t.homeAway === 'home');
+                    const away = teams.find(t => t.homeAway === 'away');
+                    const homeLogo = home.team.logo || home.team.logos?.[0]?.href || '';
+                    const awayLogo = away.team.logo || away.team.logos?.[0]?.href || '';
+                    const statusType = comp.status.type;
+                    const isLive = statusType.state === 'in';
+                    const statusText = statusType.shortDetail || statusType.description || '';
+
+                    const homeWon = statusType.completed && parseInt(home.score) > parseInt(away.score);
+                    const awayWon = statusType.completed && parseInt(away.score) > parseInt(home.score);
+
+                    const div = document.createElement('div');
+                    div.className = 'game';
+                    div.innerHTML = `
+                        <div class="status ${isLive ? 'live' : ''}">${statusText}</div>
+                        <div class="team-row">
+                        <div class="team-info">
+                            ${awayLogo ? `<img class="team-logo" src="${awayLogo}" alt="" aria-hidden="true">` : ''}
+                            <span class="team-name ${awayWon ? 'winner' : ''}">${away.team.displayName}</span>
+                        </div>
+                        <span class="team-score">${away.score ?? '-'}</span>
+                        </div>
+                        <div class="team-row">
+                        <div class="team-info">
+                            ${homeLogo ? `<img class="team-logo" src="${homeLogo}" alt="" aria-hidden="true">` : ''}
+                            <span class="team-name ${homeWon ? 'winner' : ''}">${home.team.displayName}</span>
+                        </div>
+                        <span class="team-score">${home.score ?? '-'}</span>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<div class="msg">Impossible de récupérer les résultats (' + err.message + ').</div>';
+            } finally {
+                refreshButton.classList.remove('loading');
+                refreshButton.disabled = false;
+            }
         }
 
-        container.innerHTML = '';
-        events.forEach(ev => {
-          const comp = ev.competitions[0];
-          const teams = comp.competitors;
-          const home = teams.find(t => t.homeAway === 'home');
-          const away = teams.find(t => t.homeAway === 'away');
-          const homeLogo = home.team.logo || home.team.logos?.[0]?.href || '';
-          const awayLogo = away.team.logo || away.team.logos?.[0]?.href || '';
-          const statusType = comp.status.type;
-          const isLive = statusType.state === 'in';
-          const statusText = statusType.shortDetail || statusType.description || '';
-
-          const homeWon = statusType.completed && parseInt(home.score) > parseInt(away.score);
-          const awayWon = statusType.completed && parseInt(away.score) > parseInt(home.score);
-
-          const div = document.createElement('div');
-          div.className = 'game';
-          div.innerHTML = `
-        <div class="status ${isLive ? 'live' : ''}">${statusText}</div>
-        <div class="team-row">
-          <div class="team-info">
-            ${awayLogo ? `<img class="team-logo" src="${awayLogo}" alt="" aria-hidden="true">` : ''}
-            <span class="team-name ${awayWon ? 'winner' : ''}">${away.team.displayName}</span>
-          </div>
-          <span class="team-score">${away.score ?? '-'}</span>
-        </div>
-        <div class="team-row">
-          <div class="team-info">
-            ${homeLogo ? `<img class="team-logo" src="${homeLogo}" alt="" aria-hidden="true">` : ''}
-            <span class="team-name ${homeWon ? 'winner' : ''}">${home.team.displayName}</span>
-          </div>
-          <span class="team-score">${home.score ?? '-'}</span>
-        </div>
-      `;
-          container.appendChild(div);
-        });
-
-        updateLabel.textContent = 'Mis à jour : ' + new Date().toLocaleString('fr-FR');
-      } catch (err) {
-        container.innerHTML = '<div class="msg">Impossible de récupérer les résultats (' + err.message + ').</div>';
-        updateLabel.textContent = 'Échec de la mise à jour';
-      } finally {
-        refreshButton.classList.remove('loading');
-        refreshButton.disabled = false;
-      }
-    }
-
-    loadScores();
-  </script>
+        loadScores();
+    </script>
 
 </body>
 
