@@ -104,11 +104,15 @@
             max-width: 640px;
             margin: 0 auto;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 12px;
         }
 
         .game {
+            flex: 1 1 280px;
+            max-width: 300px;
             background: var(--card);
             border: 1px solid var(--line);
             border-radius: 12px;
